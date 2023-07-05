@@ -1,5 +1,6 @@
 import { createError } from "../expection/expection.js"
 import User from "../models/User.js"
+import Video from "../models/Video.js"
 
 export const updateUser = async (req, res, next) => {
     if (req.params.id === req.user.id) {
@@ -67,15 +68,27 @@ export const unsubscribe = async (req, res, next) => {
     }
 }
 export const like = async (req, res, next) => {
+    const id = req.user.id
+    const video = req.params.videoId
     try {
-
+        await Video.findByIdAndUpdate(video,{
+            $addToSet:{likes:id},
+            $pull:{dislikes:id}
+        })
+        res.status(200).json("The video has been liked")
     } catch (err) {
         next(err)
     }
 }
 export const dislike = async (req, res, next) => {
+    const id = req.user.id
+    const video = req.params.videoId
     try {
-
+        await Video.findByIdAndUpdate(video,{
+            $addToSet:{dislikes:id},
+            $pull:{likes:id}
+        })
+        res.status(200).json("The video has been liked")
     } catch (err) {
         next(err)
     }
